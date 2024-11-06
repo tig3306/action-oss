@@ -1,53 +1,25 @@
-name: 'Upload OSS'
-description: 'Upload files to oss'
+name: 'Tencent COS Action'
+description: 'GitHub Action for Tencent COS Command'
+author: 'zkqiang <zkqiang@126.com>'
+branding:
+  icon: 'cloud'
+  color: 'blue'
 inputs:
-  key-id:
-    description: 'access key ID'
+  args:
+    description: 'COSCMD args'
     required: true
-    default: ''
-  key-secret:
-    description: 'access key secret'
+  secret_id:
+    description: 'Tencent cloud SecretId'
     required: true
-    default: ''
-  endpoint:
-    description: 'endpooint'
+  secret_key:
+    description: 'Tencent cloud SecretKey'
     required: true
-    default: ''
   bucket:
-    description: 'bucket'
+    description: 'COS bucket name'
     required: true
-    default: ''
-  asset-path:
-    description: 'file path to be uploaded'
+  region:
+    description: 'COS bucket region'
     required: true
-    default: ''
-  target-path:
-    description: 'file path stored on the OSS'
-    required: true
-    default: ''
 runs:
-  using: "composite"
-  steps:
-    - run: |
-        sudo -v ; curl https://gosspublic.alicdn.com/ossutil/install.sh | sudo bash
-      shell: bash
-    - run: |
-        j=0
-        if [ -d ${{ inputs.asset-path }} ]; then
-            for filename in `ls ${{ inputs.asset-path }}`;
-            do
-                folder_list[j]=${{ inputs.asset-path }}/$filename
-                j=`expr $j + 1`
-            done
-        else
-            folder_list[0]=${{ inputs.asset-path }}
-        fi
-        echo "Uploading to oss... "
-        for filepath in ${folder_list[@]};
-        do
-            ossutil64 -e ${{ inputs.endpoint}} \
-                -i ${{ inputs.key-id }} \
-                -k ${{ inputs.key-secret }} \
-                -f cp $filepath oss://${{ inputs.bucket }}/${{ inputs.target-path }}/$(basename ${filepath})
-        done
-      shell: bash
+  using: 'docker'
+  image: 'Dockerfile'
